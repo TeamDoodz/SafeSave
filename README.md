@@ -8,11 +8,16 @@ Ultrakill uses the BinaryFormatter class for storing save data, which is very in
 [More information on this vulnerability can be found here.](https://docs.microsoft.com/en-us/dotnet/standard/serialization/binaryformatter-security-guide)
 SafeSave solves this problem by using JSON to save data, which does not have this exploit.
 
+## Where saves are stored
+
+SafeSave files are stored in a different folder than regular saves. It is different depending on your OS, but on Windows they can be found in `C:/Users/<your username>/AppData/LocalLow/Hakita/ULTRAKILL/SafeSave`.
+You may need to enable hidden items (File Explorer->View->"Hidden Items") in File Explorer to find the folder.
+
 ## Have the developers been notified of this issue? Will any action be taken?
 
 ![A discord screenshot showing a developer of Ultrakill confirming that the BinaryFormatter vulnerability will not be fixed.](discord_screenshot.png)
 
-According to one of the developers (the identity of which will be redacted for privacy reasons), this vulnerability will not be patched anytime in the future.
+According to one of the developers (who's identity will be redacted for privacy reasons), this vulnerability will not be patched anytime in the future.
 **This desicion does not come from a place of malice.** Do not harass/witch-hunt any developers about this desicion.
 
 ## Will this mod break my existing save files?
