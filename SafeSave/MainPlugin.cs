@@ -9,7 +9,7 @@ namespace SafeSave {
 	public class MainPlugin : BaseUnityPlugin {
 		public const string GUID = "io.github.TeamDoodz.SafeSave";
 		public const string Name = "SafeSave";
-		public const string Version = "1.0.0";
+		public const string Version = "1.1.0";
 
 		internal static ManualLogSource logger;
 		internal static Harmony harmony;
