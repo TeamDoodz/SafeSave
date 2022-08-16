@@ -56,7 +56,7 @@ namespace SafeSave {
 			static void Postfix(ref string __result) {
 				if(DoNewSaveSystem.Value) {
 					string newRes = __result.Replace(OLD_EXT, NEW_EXT);
-					MainPlugin.logger.LogDebug($"{__result} -> {newRes}");
+					//MainPlugin.logger.LogDebug($"{__result} -> {newRes}");
 					__result = newRes; 
 				}
 			}
