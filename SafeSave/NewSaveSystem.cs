@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using BepInEx.Configuration;
@@ -241,19 +242,44 @@ namespace SafeSave {
 			}
 		}
 
+		[HarmonyPatch(typeof(GameProgressSaver))]
+		[HarmonyPatch(nameof(GameProgressSaver.GetTotalSecretsFound))]
+		static class UseJsonGetTotalSecretsFound {
+			static bool Prefix(ref int __result) {
+				if(!DoNewSaveSystem.Value) return true;
+
+				if(GameProgressSaver.lastTotalSecrets != -1) {
+					__result = GameProgressSaver.lastTotalSecrets;
+					return false;
+				}
+				FileInfo[] files = new DirectoryInfo(GameProgressSaver.savePath).GetFiles("lvl*progress.json");
+				int num = 0;
+				FileInfo[] array = files;
+				for(int i = 0; i < array.Length; i++) {
+					RankData rankData;
+					if((rankData = JsonSaver.LoadRankData(array[i].FullName, true, StatsManager.Instance)) != null) {
+						num += rankData.secretsFound.Count((bool a) => a);
+					}
+				}
+				GameProgressSaver.lastTotalSecrets = num;
+				__result = num;
+
+				return false;
+			}
+		}
+
 		#endregion
 
-		[HarmonyPatch]
+		[HarmonyPatch(typeof(Directory), nameof(Directory.GetFiles), new Type[] { typeof(string), typeof(string) })]
 		static class DirectoryGetFilesHack {
-			static IEnumerable<MethodBase> GetMethods() {
-				Type dir = typeof(Directory);
-				BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-
-				yield return AccessTools.Method(dir, nameof(Directory.GetFiles), new Type[] { typeof(string), typeof(string) });
-				yield return AccessTools.Method(dir, nameof(Directory.GetFiles), new Type[] { typeof(string), typeof(string), typeof(SearchOption) });
-			}
 			static void Prefix(ref string searchPattern) {
-				if(searchPattern == "*" + OLD_EXT) searchPattern = "*" + NEW_EXT;
+				searchPattern = searchPattern.Replace(OLD_EXT, NEW_EXT);
+			}
+		}
+		[HarmonyPatch(typeof(Directory), nameof(Directory.GetFiles), new Type[] { typeof(string), typeof(string), typeof(SearchOption) })]
+		static class DirectoryGetFilesHack2 {
+			static void Prefix(ref string searchPattern) {
+				searchPattern = searchPattern.Replace(OLD_EXT, NEW_EXT);
 			}
 		}
 	}
